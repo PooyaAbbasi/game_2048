@@ -20,7 +20,8 @@ class Direction(Enum):
                 return Direction.UP
 
             case _:
-                raise InvalidDirection(f'excepted {valid_directions} , got {user_command}')
+                raise InvalidDirection(f'invalid command \n'
+                                       f'{construction_message}')
 
 class InvalidDirection(Exception):
     pass
