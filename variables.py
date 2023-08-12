@@ -7,9 +7,9 @@ class Direction(Enum):
     DOWN = 'd'
 
     @staticmethod
-    def get_direction_of(user_command: str) -> "Direction":
-        user_command = user_command.strip()
-        match user_command:
+    def get_direction_of(command: str) -> "Direction":
+        command = command.strip()
+        match command:
             case 'l' | 'L':
                 return Direction.LEFT
             case 'r' | 'R':
