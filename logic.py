@@ -123,7 +123,13 @@ def get_right_or_left_empty_cells(board: list[list[int]],
     return empty_cells
 
 
-def perform_command(direction: Direction, board: list[list[int]]):
+has_moved: bool
+# has_moved to specify any cell in the board has moved or not
+
+
+def perform_command(direction: Direction, board: list[list[int]]) -> bool:
+    global has_moved
+    has_moved = False  # reinitialize has moved
     match direction:
         case Direction.UP:
             perform_up_command(board)
@@ -137,6 +143,7 @@ def perform_command(direction: Direction, board: list[list[int]]):
         case Direction.RIGHT:
             perform_right_command(board)
             pass
+    return has_moved
 
 
 def perform_left_command(board: list[list[int]]):
@@ -148,7 +155,7 @@ def perform_left_command(board: list[list[int]]):
         # if cell is zero means there is no more nonzero cell
         # because it has been compressed before so go next row
 
-        board[row_index] = get_compressed_to_left(row)
+        compress_to_left(board, row_index)
         cell = {"row": row_index, "column": first_index, "value": 0}
         value_of_cell = board[cell["row"]][cell["column"]]
         cell["value"] = value_of_cell
@@ -160,7 +167,8 @@ def perform_left_command(board: list[list[int]]):
             elif cell["value"] > 0:
 
                 if can_add_right_cell(board, cell["row"], cell["column"]):
-                    print("can add next")
+                    global has_moved
+                    has_moved = True
                     add_right_cell_and_leave_it_zero(board, cell["row"], cell["column"])
                     compress_to_left(board, cell["row"])
 
@@ -173,18 +181,20 @@ def compress_to_left(board: list[list[int]], row_index: int) -> None:
     board[row_index] = get_compressed_to_left(board[row_index])
 
 
-def get_compressed_to_left(row: list[int]):
+def get_compressed_to_left(row: list[int]) -> list[int]:
     """ compress all nonzero cells in queue to left
     by removing middle zeroes and append them to right
     :return compressed row
     """
 
+    global has_moved
     column_index = first_index
     while column_index < board_size_:
         if is_there_nonzero_right_of(column_index, row):
             if row[column_index] == 0:
                 row.pop(column_index)
                 row.append(0)
+                has_moved = True
             elif row[column_index] > 0:
                 column_index += 1
                 pass
@@ -237,6 +247,8 @@ def perform_right_command(board: list[list[int]]):
             elif cell["value"] > 0:
                 if can_add_left_cell(board, row=cell["row"],
                                      column=cell["column"]):
+                    global has_moved
+                    has_moved = True
                     add_left_cell_and_leave_it_zero(board, cell["row"], cell["column"])
                     compress_to_right(board, row_index)
 
@@ -255,12 +267,14 @@ def get_compressed_to_right(row: list[int]) -> list[int]:
         by removing middle zeroes and append them to left
         :return compressed row
         """
+    global  has_moved
     column_index = last_index
     while column_index >= first_index:
         if is_there_nonzero_left_of(column_index, row):
             if row[column_index] == 0:
                 row.pop(column_index)
                 row = [0] + row
+                has_moved = True
             elif row[column_index] > 0:
                 column_index -= 1
                 pass

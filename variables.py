@@ -1,5 +1,6 @@
 from enum import Enum
 
+
 class Direction(Enum):
     LEFT = 'l'
     RIGHT = 'r'
@@ -22,6 +23,7 @@ class Direction(Enum):
             case _:
                 raise InvalidDirection(f'invalid command \n'
                                        f'{construction_message}')
+
 
 class InvalidDirection(Exception):
     pass
